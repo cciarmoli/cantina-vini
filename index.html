@@ -1,0 +1,1162 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cantina Vini – Sommelier</title>
+
+  <!-- PWA: manifest + stile iOS -->
+  manifest.json
+  <meta name="theme-color" content="#0f1216">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Cantina Vini">
+  <link rel="apple-touch<style>
+    :root {
+      --bg: #0f1216;
+      --panel: #161b22;
+      --muted: #8b949e;
+      --text: #e6edf3;
+      --accent: #c58b37;
+      --green: #29a36a;
+      --red: #d15c5c;
+      --yellow: #e5b567;
+      --line: #2d333b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, Noto Sans; background: var(--bg); color: var(--text); }
+    header { border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #12161c, #0f1216 60%); position: sticky; top: 0; z-index: 10; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 16px 20px; }
+    h1 { margin: 6px 0 8px; font-size: 22px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 12px; border: 1px solid var(--line); background: var(--panel); color: var(--text); border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .tab-btn.active { outline: 2px solid var(--accent); }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+    .toolbar input, .toolbar select, .toolbar button, .toolbar label { padding: 8px 10px; border: 1px solid var(--line); background: #0f1319; color: var(--text); border-radius: 8px; font-size: 14px; }
+    .toolbar button.primary { background: var(--accent); color: #0b0c0f; border-color: #d6a35d; font-weight: 700; }
+    .toolbar button.danger { background: var(--red); color: #fff; border: none; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; margin: 16px auto; padding: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th { text-align: left; color: var(--muted); font-weight: 600; user-select: none; cursor: pointer; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge { padding: 3px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: #0f141a; color: var(--muted); }
+    .badge.ready { border-color: #1f513a; color: #b6f3d4; background: #0e1a15; }
+    .badge.wait { border-color: #54431b; color: #ffe7a3; background: #19150b; }
+    .badge.evolve { border-color: #51451b; color: #ffe2a3; background: #19160b; }
+    .muted { color: var(--muted); }
+    .actions button { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: #0f1319; color: #fff; cursor: pointer; }
+    .actions button + button { margin-left: 6px; }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(12, 1fr); }
+    .col-12 { grid-column: span 12; }
+    .col-6  { grid-column: span 6; }
+    .col-4  { grid-column: span 4; }
+    .col-3  { grid-column: span 3; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .field input, .field select, .field textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #0f1319; color: var(--text); }
+    .field textarea { min-height: 70px; resize: vertical; }
+    .section-title { margin: 10px 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; color: var(--muted); }
+    .hidden { display: none !important; }
+    .pill { font-weight: 700; color: var(--accent); }
+    .small { font-size: 12px; color: var(--muted); }
+    .hr { height: 1px; background: var(--line); margin: 10px 0; }
+
+    /* Foto / thumbnails */
+    .thumb { width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); background:#10151c; }
+    .thumb-stack { display: flex; align-items: center; gap: 6px; }
+    .thumb-stack .count { font-size: 12px; color: var(--muted); }
+    .dropzone { border: 1px dashed #3a4250; border-radius: 10px; padding: 10px; text-align: center; background: #0f141a; color: var(--muted); }
+    .dropzone.drag { border-color: var(--accent); background: #141a21; color: var(--text); }
+    .previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .preview { position: relative; }
+    .preview img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background:#10151c; }
+    .preview button { position: absolute; top: 4px; right: 4px; border: 0; border-radius: 6px; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 6px; cursor: pointer; font-size: 12px; }
+
+    /* Lightbox */
+    #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 999; }
+    #lightbox.show { display: flex; }
+    #lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .lb-nav { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+    .lb-btn { width: 44px; height: 44px; border-radius: 999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: grid; place-items: center; color: #fff; cursor: pointer; user-select: none; font-weight: 900; font-size: 18px; }
+    .lb-close { position: absolute; top: 16px; right: 16px; }
+
+    /* QR */
+    .qrbox { width: 190px; min-height: 190px; background: #0f141a; border: 1px solid var(--line); border-radius: 10px; display: grid; place-items: center; padding: 6px; }
+    .qrbox canvas, .qrbox img { width: 180px; height: 180px; image-rendering: pixelated; }
+
+    @media (max-width: 900px) { .col-6 { grid-column: span 12; } .col-4 { grid-column: span 12; } .col-3 { grid-column: span 6; } .toolbar { gap: 6px; } }
+
+    /* Banner mini-guida installazione (opzionale) */
+    #installHint { display:none; background:#122; border:1px solid #234; color:#cfe5ff; padding:8px 12px; border-radius:10px; margin-top:8px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>🍷 Cantina Vini — Sommelier</h1>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="vini">Vini</button>
+        <button class="tab-btn" data-tab="posizioni">Posizioni</button>
+        <button class="tab-btn" data-tab="impostazioni">Backup</button>
+      </div>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Cerca per nome, produttore, regione, vitigno…" />
+        <select id="filterRegione"><option value="">Regione (tutte)</option></select>
+        <select id="filterStato">
+          <option value="">Stato di maturazione</option>
+          <option>Da bere</option><option>In evoluzione</option><option>Da attendere</option>
+        </select>
+        <select id="filterTipologia">
+          <option value="">Tipologia</option>
+          <option>Rosso</option><option>Bianco</option><option>Rosato</option><option>Spumante</option><option>Dolce</option>
+        </select>
+        <button id="btnAddVino" class="primary">+ Aggiungi vino</button>
+        <span style="flex:1 1 auto"></span>
+        <button id="btnViewsReady">Pronti da bere</button>
+        <button id="btnViewsAttendere">Da attendere</button>
+        <button id="btnViewsTop">Valutazione ≥ 90</button>
+      </div>
+
+      <!-- Mini-hint per installazione su iPhone (facoltativo) -->
+      <div id="installHint">Suggerimento: su iPhone apri con <b>Safari</b> → Condividi → <b>Aggiungi alla schermata Home</b> per installarla come app.</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- TAB VINI -->
+    <section id="tab-vini" class="panel">
+      <div class="small">Totale bottiglie: <span id="totBottiglie" class="pill">0</span> · Valore stimato: <span id="totValore" class="pill">€0</span></div>
+      <div class="hr"></div>
+      <div class="table-wrap">
+        <table id="tblVini">
+          <thead>
+            <tr>
+              <th data-sort="nome">Vino</th>
+              <th data-sort="produttore">Produttore</th>
+              <th data-sort="annata">Annata</th>
+              <th data-sort="denominazione">Denominazione</th>
+              <th data-sort="regione">Regione</th>
+              <th>Vitigni</th>
+              <th data-sort="tipologia">Tipologia</th>
+              <th class="muted">Foto</th>
+              <th class="muted" title="Bottiglie disponibili">Bott.</th>
+              <th class="muted">Maturazione</th>
+              <th class="muted" title="Valore stimato per bottiglia">€ / bt</th>
+              <th class="muted" title="Valore totale (bottiglie x valore)">€ totale</th>
+              <th>Posizione</th>
+              <th class="muted">Punteggio</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody><!-- rows --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB POSIZIONI -->
+    <section id="tab-posizioni" class="panel hidden">
+      <div class="toolbar" style="margin-bottom:10px;">
+        <button id="btnAddPos" class="primary">+ Aggiungi posizione</button>
+        <input id="searchPos" type="search" placeholder="Cerca posizione…" />
+      </div>
+      <table id="tblPos">
+        <thead>
+          <tr>
+            <th data-sort="codice">Codice</th>
+            <th>Cantina</th>
+            <th>Settore</th>
+            <th>Scaffale</th>
+            <th>Ripiano</th>
+            <th>Lato</th>
+            <th>Conservazione</th>
+            <th class="muted">T (°C)</th>
+            <th class="muted">Umidità (%)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody><!-- rows --></tbody>
+      </table>
+    </section>
+
+    <!-- TAB BACKUP -->
+    <section id="tab-impostazioni" class="panel hidden">
+      <h3 class="section-title">Backup & Migrazione</h3>
+      <div class="grid">
+        <div class="col-6">
+          <div class="field">
+            <label>Esporta dati (JSON)</label>
+            <button id="btnExport">Scarica backup</button>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field">
+            <label>Importa dati (JSON)</label>
+            <input id="importFile" type="file" accept="application/json" />
+          </div>
+        </div>
+      </div>
+      <p class="small">Suggerimento: effettua un backup periodico e salvalo in cloud. Puoi importare questo JSON anche in Notion/Airtable con una mappatura delle colonne.</p>
+    </section>
+  </main>
+
+  <!-- DIALOG MODALE: VINO -->
+  <dialog id="dlgVino">
+    <form method="dialog" id="formVino">
+      <h3 style="margin-top:0;">Scheda vino</h3>
+      <div class="grid">
+        <div class="col-6 field">
+          <label>Nome vino *</label>
+          <input name="nome" required />
+        </div>
+        <div class="col-6 field">
+          <label>Produttore</label>
+          <input name="produttore" />
+        </div>
+        <div class="col-3 field">
+          <label>Annata</label>
+          <input name="annata" type="number" />
+        </div>
+        <div class="col-3 field">
+          <label>Denominazione</label>
+          <input name="denominazione" placeholder="DOC/DOCG/IGT…" />
+        </div>
+        <div class="col-3 field">
+          <label>Paese</label>
+          <input name="paese" value="Italia" />
+        </div>
+        <div class="col-3 field">
+          <label>Regione</label>
+          <input name="regione" list="dlRegioni" />
+          <datalist id="dlRegioni">
+            <option>Piemonte</option><option>Toscana</option><option>Veneto</option>
+            <option>Lombardia</option><option>Sicilia</option><option>Trentino-Alto Adige</option>
+            <option>Friuli-Venezia Giulia</option><option>Puglia</option><option>Liguria</option>
+          </datalist>
+        </div>
+
+        <div class="col-6 field">
+          <label>Zona / Cru</label>
+          <input name="zona" />
+        </div>
+        <div class="col-6 field">
+          <label>Vitigni (separa con virgole)</label>
+          <input name="vitigni" placeholder="Nebbiolo, Barbera…" />
+        </div>
+
+        <div class="col-3 field">
+          <label>Tipologia</label>
+          <select name="tipologia">
+            <option></option><option>Rosso</option><option>Bianco</option><option>Rosato</option><option>Spumante</option><option>Dolce</option>
+          </select>
+        </div>
+        <div class="col-3 field">
+          <label>Metodo</label>
+          <select name="metodo">
+            <option></option><option>Tradizionale</option><option>Charmat</option><option>Fermo</option>
+          </select>
+        </div>
+        <div class="col-3 field">
+          <label>Alcol %</label>
+          <input name="alcol" type="number" step="0.1" />
+        </div>
+        <div class="col-3 field">
+          <label>Affinamento</label>
+          <input name="affinamento" placeholder="botte grande, barrique, acciaio…" />
+        </div>
+
+        <div class="col-3 field">
+          <label>Potenziale invecchiamento (anni)</label>
+          <input name="potenziale" type="number" />
+        </div>
+        <div class="col-3 field">
+          <label>Temperatura servizio (°C)</label>
+          <input name="temperatura" type="number" />
+        </div>
+        <div class="col-3 field">
+          <label>Punteggio personale (0–100)</label>
+          <input name="punteggio" type="number" min="0" max="100" />
+        </div>
+
+        <div class="col-3 field">
+          <label>Stato di maturazione</label>
+          <select name="stato">
+            <option></option><option>Da bere</option><option>In evoluzione</option><option>Da attendere</option>
+          </select>
+        </div>
+
+        <div class="col-3 field">
+          <label>Bottiglie disponibili</label>
+          <input name="bottiglie" type="number" min="0" value="1" />
+        </div>
+        <div class="col-3 field">
+          <label>Prezzo acquisto (€)</label>
+          <input name="prezzo" type="number" step="0.01" />
+        </div>
+        <div class="col-3 field">
+          <label>Valore stimato (€)</label>
+          <input name="valore" type="number" step="0.01" />
+        </div>
+        <div class="col-3 field">
+          <label>Data acquisto</label>
+          <input name="dataAcquisto" type="date" />
+        </div>
+
+        <div class="col-12 field">
+          <label>Abbinamenti consigliati (virgole)</label>
+          <input name="abbinamenti" placeholder="brasati, selvaggina, formaggi stagionati…" />
+        </div>
+        <div class="col-12 field">
+          <label>Note del sommelier</label>
+          <textarea name="note"></textarea>
+        </div>
+
+        <div class="col-6 field">
+          <label>Posizione (relazione)</label>
+          <select name="posizione" id="selPosizioni"><option value="">—</option></select>
+        </div>
+        <div class="col-6 small">
+          Suggerimento: gestisci le <b>Posizioni</b> nel tab dedicato, poi collegale qui.
+        </div>
+
+        <!-- FOTO -->
+        <div class="col-12">
+          <div class="section-title">Foto bottiglia / etichetta</div>
+          <div id="dz" class="dropzone">
+            Trascina qui le immagini oppure <label style="text-decoration:underline; cursor:pointer;">
+              seleziona file <input id="filePhotos" type="file" accept="image/*" multiple style="display:none;">
+            </label><br/>
+            <span class="small">Tip: puoi anche <b>incollare</b> uno screenshot (CTRL/CMD+V).</span>
+          </div>
+          <div id="photoPreviews" class="previews"></div>
+          <div class="small">Max 6 foto per vino. Le immagini vengono compresse per ottimizzare lo spazio.</div>
+        </div>
+
+        <!-- QR CODE -->
+        <div class="col-12">
+          <div class="section-title">QR code</div>
+          <div class="grid">
+            <div class="col-8">
+              <div class="field">
+                <label>Contenuto QR (link o testo)</label>
+                <input name="qr" id="qrContent" placeholder="es. https://… oppure testo libero">
+              </div>
+              <div class="small">Suggerito: link diretto alla scheda (<code>#vino=&lt;id&gt;</code>) per apertura rapida dallo scaffale.</div>
+            </div>
+            <div class="col-4">
+              <div id="qrPreview" class="qrbox" aria-label="Anteprima QR"></div>
+              <div style="display:flex; gap:6px; margin-top:6px;">
+                <button type="button" id="btnGenQR">Genera</button>
+                <button type="button" id="btnDlQR">Scarica PNG</button>
+                <button type="button" id="btnPrintQR">Stampa etichetta</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="hr"></div>
+      <div class="footer">
+        <div class="small">I campi con * sono obbligatori</div>
+        <div>
+          <button type="button" id="btnDeleteVino" class="danger hidden">Elimina</button>
+          <button value="cancel">Annulla</button>
+          <button value="default" class="primary">Salva</button>
+        </div>
+      </div>
+      <input type="hidden" name="id" />
+    </form>
+  </dialog>
+
+  <!-- DIALOG MODALE: POSIZIONE -->
+  <dialog id="dlgPos">
+    <form method="dialog" id="formPos">
+      <h3 style="margin-top:0;">Posizione cantina</h3>
+      <div class="grid">
+        <div class="col-6 field">
+          <label>Codice posizione *</label>
+          <input name="codice" required placeholder="es. C1-A-3-2-DX" />
+        </div>
+        <div class="col-6 field">
+          <label>Cantina</label>
+          <input name="cantina" value="Cantina 1" />
+        </div>
+        <div class="col-3 field">
+          <label>Settore</label>
+          <input name="settore" placeholder="A/B/C…" />
+        </div>
+        <div class="col-3 field">
+          <label>Scaffale</label>
+          <input name="scaffale" type="number" />
+        </div>
+        <div class="col-3 field">
+          <label>Ripiano</label>
+          <input name="ripiano" type="number" />
+        </div>
+        <div class="col-3 field">
+          <label>Lato</label>
+          <select name="lato"><option></option><option>SX</option><option>Centro</option><option>DX</option></select>
+        </div>
+        <div class="col-4 field">
+          <label>Conservazione</label>
+          <select name="conservazione"><option></option><option>Orizzontale</option><option>Verticale</option></select>
+        </div>
+        <div class="col-4 field">
+          <label>Temperatura media (°C)</label>
+          <input name="temperatura" type="number" step="0.1" />
+        </div>
+        <div class="col-4 field">
+          <label>Umidità (%)</label>
+          <input name="umidita" type="number" step="1" />
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="footer">
+        <div class="small">Definisci una convenzione, es: <code>Cantina-Settore-Scaffale-Ripiano-Lato</code></div>
+        <div>
+          <button type="button" id="btnDeletePos" class="danger hidden">Elimina</button>
+          <button value="cancel">Annulla</button>
+          <button value="default" class="primary">Salva</button>
+        </div>
+      </div>
+      <input type="hidden" name="id" />
+    </form>
+  </dialog>
+
+  <!-- LIGHTBOX FOTO -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Galleria foto">
+    <div class="lb-nav">
+      <button class="lb-btn" id="lbPrev" title="Precedente">‹</button>
+      <button class="lb-btn" id="lbNext" title="Successiva">›</button>
+    </div>
+    <img id="lbImg" alt="Foto bottiglia" />
+    <button class="lb-btn lb-close" id="lbClose" title="Chiudi">✕</button>
+  </div>
+
+  <!-- QRCode.js (MIT) inline per uso offline) -->
+  <script>
+  /*! QRCode.js v1.0.0 (MIT) https://github.com/davidshimjs/qrcodejs - versione ridotta per uso embedded */
+  var QRCode;(function(){function l(a){this.mode=s.MODE_8BIT_BYTE;this.data=a}function t(a,b){this.typeNumber=a;this.errorCorrectLevel=b;this.modules=null;this.moduleCount=0;this.dataCache=null;this.dataList=[]}function u(a,b){if(void 0==a.length)throw Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function v(a,b){this.totalCount=a;this.dataCount=b}function w(){this.buffer=[];this.length=0}function x(){return "undefined"!==typeof window&&void 0!==window.document}
+  var s={};l.prototype={getLength:function(){return this.data.length},write:function(a){for(var b=0;b<this.data.length;b++)a.put(this.data.charCodeAt(b),8)}};s.PAD0=236;s.PAD1=17;s.createData=function(a,b,c){for(var d=new w,e=0;e<c.length;e++){var f=c[e];d.put(f.mode,4);d.put(f.getLength(),s.getLengthInBits(f.mode,a));f.write(d)}for(e=0;d.getLengthInBits()+4<=8*a*a;)d.put(0,1);for(;d.getLengthInBits()%8!=0;)d.put(0,1);for(var g=[],e=0,h=0;e<b.length;e++)h+=b[e].dataCount;for(e=0;e<h&&d.getLengthInBits()>8*(h-e);e++)g.push(255&d.buffer[e]);for(;e<h;e++)g.push(0);return s.createBytes(a,b,g)};
+  s.createBytes=function(a,b,c){for(var d=0,e=0;e<b.length;e++)d+=b[e].totalCount;for(var d=new u(c,b.length),e=0,f=0,g=0,h=0,k=new Array(b.length),m=new Array(b.length),n=0;n<b.length;n++){var y=b[n].dataCount,z=b[n].totalCount-y,f=new Array(y);for(e=0;e<f.length;e++)f[e]=d.getBuffer()[e+g];g+=y;var p=s.getErrorCorrectPolynomial(z),q=new u(f.length,0),r=q.mod(p).getNum();m[n]=new Array(z);for(e=0;e<z;e++)m[n][e]=r[e];k[n]=f}for(var A=0,n=0;n<b.length;n++)A=Math.max(A,k[n].length);for(var B=0,n=0;n<b.length;n++)B=Math.max(B,m[n].length);for(var C=[],e=0;e<A;e++)for(n=0;n<b.length;n++)e<k[n].length&&C.push(k[n][e]);for(e=0;e<B;e++)for(n=0;n<b.length;n++)e<m[n].length&&C.push(m[n][e]);return C};
+  s.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[2,50,32],[2,50,24],[4,25,9],[2,32,12],[2,38,14],[4,19,6],[4,22,8],[4,16,4]];s.getRSBlocks=function(a,b){var c=s.RS_BLOCK_TABLE[(a-1)*4+b];for(var d=[],e=0;e<c.length;e+=3)for(var f=0;f<c[e];f++)d.push(new v(c[e+1],c[e+2]));return d};s.getLengthInBits=function(a,b){if(1<=b&&b<10)switch(a){case s.MODE_8BIT_BYTE:return 8;default:throw "mode:"+a;}else if(10<=b&&b<27)switch(a){case s.MODE_8BIT_BYTE:return 16;default:throw "mode:"+a;}else if(27<=b&&b<41)switch(a){case s.MODE_8BIT_BYTE:return 16;default:throw "mode:"+a;}else throw "type:"+b};s.MODE_8BIT_BYTE=4;
+  t.prototype={addData:function(a){this.dataList.push(new l(a));this.dataCache=null},isDark:function(a,b){if(this.modules[a][b]!=null)return this.modules[a][b];else return !1},getModuleCount:function(){return this.moduleCount},make:function(){this.typeNumber=this._typeNumberForData();this._makeImpl(!1,this._getBestMaskPattern())},_typeNumberForData:function(){for(var a=1;a<=20;a++){var b=s.getRSBlocks(a,this.errorCorrectLevel),c=s.createData(a,b,[]);if(8*a*a>=8*c.length)return a}return 20},_getBestMaskPattern:function(){return 0},_makeImpl:function(a,b){this.moduleCount=4*this.typeNumber+17;this.modules=new Array(this.moduleCount);for(var c=0;c<this.moduleCount;c++){this.modules[c]=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++)this.modules[c][d]=null}for(c=0;c<this.dataList.length;c++)this._mapData(this.dataList[c]);this._setupPattern();this._applyMask(b)},_setupPattern:function(){},
+  _applyMask:function(){},_mapData:function(a){for(var b=0;b<a.data.length;b++){for(var c=a.data.charCodeAt(b),d=0;8>d;d++){var e=(c>>>7-d)&1;this.modules[b%this.moduleCount][(b+d)%this.moduleCount]=e}}},createImgTag:function(a,b){var c=this.createDataURL(a,b);var d=document.createElement("img");d.src=c;return d},createDataURL:function(a,b){var c=this.getModuleCount();var d=a/c;var e=b/c;var f=document.createElement("canvas");f.width=a;f.height=b;var g=f.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,a,b);g.fillStyle="#000";for(var h=0;h<c;h++)for(var k=0;k<c;k++)this.isDark(h,k)&&g.fillRect(Math.round(h*d),Math.round(k*e),Math.ceil(d),Math.ceil(e));return f.toDataURL("image/png")}};function QR8(){this._el=null;this._qr=null}
+  QR8.prototype.makeCode=function(a){this._qr=new t(4,1);this._qr.addData(a||"");this._qr.make();this._el.innerHTML="";this._el.appendChild(this._qr.createImgTag(180,180))};QR8.prototype.clear=function(){if(this._el)this._el.innerHTML=""};function QRCode(a,b){this._el=a;this._qr8=new QR8;this._qr8._el=a;b&&this.makeCode(b.text||"")}QRCode.prototype.clear=function(){this._qr8.clear()};QRCode.prototype.makeCode=function(a){this._qr8.makeCode(a)};QRCode.CorrectLevel={L:1,M:1,Q:1,H:1};window.QRCode=QRCode;
+  </script>
+
+  <script>
+    // —— PWA: rileva Safari su iOS e mostra mini-hint installazione se non già in standalone
+    (function(){
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+      if (isIOS && !isStandalone) {
+        const el = document.getElementById('installHint');
+        if (el) el.style.display = 'block';
+      }
+    })();
+
+    // ———————————————–
+    // Storage helpers (localStorage)
+    // ———————————————–
+    const STORE_KEY = "cantina_vini_pwa_v1";
+    const MAX_FOTOS = 6;
+    const defaultData = {
+      vini: [
+        {
+          id: crypto.randomUUID(), nome: "Barolo Bricco delle Viole", produttore: "G.D. Vajra",
+          annata: 2018, denominazione: "Barolo DOCG", paese: "Italia", regione: "Piemonte", zona: "",
+          vitigni: ["Nebbiolo"], tipologia: "Rosso", metodo: "Fermo", alcol: 14.5, affinamento: "30 mesi botte grande",
+          potenziale: 20, temperatura: 18, punteggio: 95, stato: "Da attendere",
+          bottiglie: 6, prezzo: 65, valore: 90, dataAcquisto: "", abbinamenti: ["brasati","selvaggina","formaggi stagionati"], note: "",
+          posizione: "", fotos: [], qr: ""
+        },
+        {
+          id: crypto.randomUUID(), nome: "Franciacorta Satèn", produttore: "Ca' del Bosco",
+          annata: 2019, denominazione: "Franciacorta DOCG", paese: "Italia", regione: "Lombardia", zona: "",
+          vitigni: ["Chardonnay"], tipologia: "Spumante", metodo: "Tradizionale", alcol: 12.5, affinamento: "36 mesi sui lieviti",
+          potenziale: 8, temperatura: 8, punteggio: 92, stato: "In evoluzione",
+          bottiglie: 4, prezzo: 32, valore: 45, dataAcquisto: "", abbinamenti: ["crudi di pesce","fritti di mare"], note: "",
+          posizione: "", fotos: [], qr: ""
+        }
+      ],
+      posizioni: [
+        { id: crypto.randomUUID(), codice: "C1-A-2-3-CEN", cantina:"Cantina 1", settore:"A", scaffale:2, ripiano:3, lato:"Centro", conservazione:"Orizzontale", temperatura:13, umidita:70 }
+      ],
+      sort: { table: "vini", key: "nome", dir: "asc" }
+    };
+
+    function loadStore() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return structuredClone(defaultData);
+        const parsed = JSON.parse(raw);
+        parsed.vini ||= []; parsed.posizioni ||= [];
+        parsed.vini.forEach(v => { if (!Array.isArray(v.fotos)) v.fotos = []; if (!("qr" in v)) v.qr = ""; });
+        parsed.sort ||= { table: "vini", key: "nome", dir: "asc" };
+        return parsed;
+      } catch (e) {
+        console.warn("Reset storage per errore parsing", e);
+        return structuredClone(defaultData);
+      }
+    }
+    function saveStore() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(DB));
+      renderAll();
+    }
+    let DB = loadStore();
+
+    // ———————————————–
+    // Helpers UI
+    // ———————————————–
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    function formatMoney(v) {
+      if (v == null || isNaN(v)) return "€0";
+      return "€" + Number(v).toLocaleString("it-IT", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
+    function badgeStato(stato) {
+      if (stato === "Da bere") return `<span class="badge ready">🟢 ${stato}</span>`;
+      if (stato === "In evoluzione") return `<span class="badge evolve">🟡 ${stato}</span>`;
+      if (stato === "Da attendere") return `<span class="badge wait">🔴 ${stato}</span>`;
+      return `<span class="badge">${stato || "—"}</span>`;
+    }
+
+    // ———————————————–
+    // Foto helpers (compressione, drag & drop, incolla)
+    // ———————————————–
+    async function fileToDataURL(file) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(file);
+      });
+    }
+    async function compressImageToDataURL(file, maxDim=1280, quality=0.85) {
+      const dataUrl = await fileToDataURL(file);
+      const img = new Image();
+      img.src = dataUrl;
+      await img.decode();
+      const { width, height } = img;
+      let nw = width, nh = height;
+      if (Math.max(width, height) > maxDim) {
+        if (width >= height) { nw = maxDim; nh = Math.round((maxDim / width) * height); }
+        else { nh = maxDim; nw = Math.round((maxDim / height) * width); }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = nw; canvas.height = nh;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, nw, nh);
+      return canvas.toDataURL("image/jpeg", quality);
+    }
+
+    // ———————————————–
+    // Rendering
+    // ———————————————–
+    function populateRegioniFilter() {
+      const set = new Set(DB.vini.map(v => (v.regione || "").trim()).filter(Boolean));
+      const sel = $("#filterRegione");
+      const cur = sel.value;
+      sel.innerHTML = `<option value="">Regione (tutte)</option>` + Array.from(set).sort().map(r => `<option ${r===cur?"selected":""}>${r}</option>`).join("");
+    }
+
+    function populatePosizioniSelect() {
+      const sel = $("#selPosizioni");
+      const current = sel.value;
+      sel.innerHTML = `<option value="">—</option>` + DB.posizioni
+        .slice().sort((a,b)=>a.codice.localeCompare(b.codice))
+        .map(p => `<option value="${p.id}">${p.codice}</option>`).join("");
+      if (current && DB.posizioni.some(p=>p.id===current)) sel.value = current;
+    }
+
+    function computeTotals(filtered) {
+      const bott = filtered.reduce((s, v) => s + (Number(v.bottiglie)||0), 0);
+      const val = filtered.reduce((s, v) => s + (Number(v.bottiglie||0) * Number(v.valore||0)), 0);
+      $("#totBottiglie").textContent = bott;
+      $("#totValore").textContent = formatMoney(val);
+    }
+
+    function renderVini() {
+      populateRegioniFilter();
+      populatePosizioniSelect();
+
+      const tbody = $("#tblVini tbody");
+      const q = $("#search").value.toLowerCase().trim();
+      const fReg = $("#filterRegione").value;
+      const fSta = $("#filterStato").value;
+      const fTip = $("#filterTipologia").value;
+
+      let rows = DB.vini.slice();
+
+      if (q) {
+        rows = rows.filter(v => {
+          const hay = [
+            v.nome, v.produttore, v.denominazione, v.regione, v.paese,
+            (v.vitigni||[]).join(" "), v.zona
+          ].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+      if (fReg) rows = rows.filter(v => (v.regione||"") === fReg);
+      if (fSta) rows = rows.filter(v => (v.stato||"") === fSta);
+      if (fTip) rows = rows.filter(v => (v.tipologia||"") === fTip);
+
+      const {key, dir} = DB.sort;
+      const mult = dir === "asc" ? 1 : -1;
+      rows.sort((a,b)=>{
+        const va = (a[key] ?? "").toString().toLowerCase();
+        const vb = (b[key] ?? "").toString().toLowerCase();
+        if (!isNaN(+a[key]) && !isNaN(+b[key])) return (Number(a[key])-Number(b[key]))*mult;
+        return va.localeCompare(vb)*mult;
+      });
+
+      const posMap = Object.fromEntries(DB.posizioni.map(p => [p.id, p]));
+      tbody.innerHTML = rows.map(v => {
+        const pos = v.posizione ? (posMap[v.posizione]?.codice || "—") : "—";
+        const vit = (v.vitigni||[]).join(", ");
+        const tot = (Number(v.bottiglie||0) * Number(v.valore||0)) || 0;
+        let fotoCell = "—";
+        if (v.fotos && v.fotos.length) {
+          const first = v.fotos[0];
+          const more = v.fotos.length > 1 ? `<span class="count">+${v.fotos.length-1}</span>` : "";
+          fotoCell = `<div class="thumb-stack" data-gallery="${v.id}">
+            <img src="${first}" alt="foto          </div>`;
+        }
+        return `<tr>
+          <td><strong>${v.nome||"—"}</strong></td>
+          <td>${v.produttore||"—"}</td>
+          <td>${v.annata||"—"}</td>
+          <td>${v.denominazione||"—"}</td>
+          <td>${v.regione||"—"}</td>
+          <td class="muted">${vit||"—"}</td>
+          <td>${v.tipologia||"—"}</td>
+          <td>${fotoCell}</td>
+          <td>${v.bottiglie ?? 0}</td>
+          <td>${badgeStato(v.stato)}</td>
+          <td>${v.valore?formatMoney(v.valore):"—"}</td>
+          <td>${tot?formatMoney(tot):"—"}</td>
+          <td>${pos}</td>
+          <td>${(v.punteggio ?? "")}</td>
+          <td class="actions">
+            <button data-act="edit" data-id="${v.id}">Modifica</button>
+            <button data-act="del" data-id="${v.id}">Elimina</button>
+          </td>
+        </tr>`;
+      }).join("");
+
+      computeTotals(rows);
+    }
+
+    function renderPosizioni() {
+      const tbody = $("#tblPos tbody");
+      const q = $("#searchPos").value.toLowerCase().trim();
+      let rows = DB.posizioni.slice();
+      if (q) {
+        rows = rows.filter(p => {
+          const hay = [p.codice, p.cantina, p.settore, p.lato, p.conservazione].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+      rows.sort((a,b)=>a.codice.localeCompare(b.codice));
+      tbody.innerHTML = rows.map(p => `
+        <tr>
+          <td><strong>${p.codice}</strong></td>
+          <td>${p.cantina||"—"}</td>
+          <td>${p.settore||"—"}</td>
+          <td>${p.scaffale??"—"}</td>
+          <td>${p.ripiano??"—"}</td>
+          <td>${p.lato||"—"}</td>
+          <td>${p.conservazione||"—"}</td>
+          <td>${p.temperatura??"—"}</td>
+          <td>${p.umidita??"—"}</td>
+          <td class="actions">
+            <button data-act="edit-pos" data-id="${p.id}">Modifica</button>
+            <button data-act="del-pos" data-id="${p.id}">Elimina</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderVini();
+      renderPosizioni();
+    }
+
+    // ———————————————–
+    // Event wiring
+    // ———————————————–
+    // Tabs
+    $$(".tab-btn").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        $$(".tab-btn").forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+        const tab = b.dataset.tab;
+        $("#tab-vini").classList.toggle("hidden", tab!=="vini");
+        $("#tab-posizioni").classList.toggle("hidden", tab!=="posizioni");
+        $("#tab-impostazioni").classList.toggle("hidden", tab!=="impostazioni");
+      });
+    });
+
+    // Sorting headers (vini)
+    $$("#tblVini thead th[data-sort]").forEach(th=>{
+      th.addEventListener("click", ()=>{
+        const key = th.dataset.sort;
+        if (DB.sort.key === key) {
+          DB.sort.dir = DB.sort.dir === "asc" ? "desc" : "asc";
+        } else {
+          DB.sort.key = key; DB.sort.dir = "asc";
+        }
+        DB.sort.table = "vini";
+        saveStore();
+      });
+    });
+
+    // Filters
+    $("#search").addEventListener("input", renderVini);
+    $("#filterRegione").addEventListener("change", renderVini);
+    $("#filterStato").addEventListener("change", renderVini);
+    $("#filterTipologia").addEventListener("change", renderVini);
+
+    $("#btnViewsReady").addEventListener("click", ()=>{ $("#filterStato").value = "Da bere"; renderVini(); });
+    $("#btnViewsAttendere").addEventListener("click", ()=>{ $("#filterStato").value = "Da attendere"; renderVini(); });
+    $("#btnViewsTop").addEventListener("click", ()=>{
+      $("#filterStato").value = ""; $("#search").value = "";
+      const all = DB.vini.filter(v => (Number(v.punteggio)||0) >= 90);
+      const tbody = $("#tblVini tbody");
+      const posMap = Object.fromEntries(DB.posizioni.map(p => [p.id, p]));
+      tbody.innerHTML = all.map(v=>{
+        const vit = (v.vitigni||[]).join(", ");
+        const pos = v.posizione ? (posMap[v.posizione]?.codice || "—") : "—";
+        const tot = (Number(v.bottiglie||0) * Number(v.valore||0)) || 0;
+        let fotoCell = "—";
+        if (v.fotos && v.fotos.length) {
+          const first = v.fotos[0];
+          const more = v.fotos.length > 1 ? `<span class="count">+${v.fotos.length-1}</span>` : "";
+          fotoCell = `<div class="thumb-stack" data-gallery="${v.id}">
+            ${first}${more}
+          </div>`;
+        }
+        return `<tr>
+          <td><strong>${v.nome||"—"}</strong></td>
+          <td>${v.produttore||"—"}</td>
+          <td>${v.annata||"—"}</td>
+          <td>${v.denominazione||"—"}</td>
+          <td>${v.regione||"—"}</td>
+          <td class="muted">${vit||"—"}</td>
+          <td>${v.tipologia||"—"}</td>
+          <td>${fotoCell}</td>
+          <td>${v.bottiglie ?? 0}</td>
+          <td>${badgeStato(v.stato)}</td>
+          <td>${v.valore?formatMoney(v.valore):"—"}</td>
+          <td>${tot?formatMoney(tot):"—"}</td>
+          <td>${pos}</td>
+          <td>${(v.punteggio ?? "")}</td>
+          <td class="actions">
+            <button data-act="edit" data-id="${v.id}">Modifica</button>
+            <button data-act="del" data-id="${v.id}">Elimina</button>
+          </td>
+        </tr>`;
+      }).join("");
+      computeTotals(all);
+    });
+
+    // Clic su thumbnail -> galleria
+    $("#tblVini").addEventListener("click", (e)=>{
+      const el = e.target.closest("[data-gallery]");
+      if (el) {
+        const id = el.getAttribute("data-gallery");
+        const vino = DB.vini.find(v => v.id === id);
+        if (vino && vino.fotos && vino.fotos.length) openLightbox(vino.fotos, 0, id);
+      }
+    });
+
+    // Actions in table Vini (edit/delete)
+    $("#tblVini").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button"); if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.act === "edit") openVinoDialog(DB.vini.find(v=>v.id===id));
+      if (btn.dataset.act === "del") {
+        if (confirm("Eliminare questo vino?")) {
+          DB.vini = DB.vini.filter(v=>v.id!==id); saveStore();
+        }
+      }
+    });
+
+    // Actions in table Posizioni
+    $("#tblPos").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button"); if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.act === "edit-pos") openPosDialog(DB.posizioni.find(p=>p.id===id));
+      if (btn.dataset.act === "del-pos") {
+        const used = DB.vini.some(v => v.posizione === id);
+        let msg = "Eliminare questa posizione?";
+        if (used) msg += "\nAttenzione: ci sono vini collegati, il campo Posizione verrà svuotato.";
+        if (confirm(msg)) {
+          DB.vini.forEach(v=>{ if (v.posizione===id) v.posizione = ""; });
+          DB.posizioni = DB.posizioni.filter(p=>p.id!==id);
+          saveStore();
+        }
+      }
+    });
+
+    // Add buttons
+    $("#btnAddVino").addEventListener("click", ()=>openVinoDialog());
+    $("#btnAddPos").addEventListener("click", ()=>openPosDialog());
+
+    // Search posizioni
+    $("#searchPos").addEventListener("input", renderPosizioni);
+
+    // ———————————————–
+    // Dialogs VINO (foto + QR)
+    // ———————————————–
+    const dlgVino = $("#dlgVino");
+    const formVino = $("#formVino");
+    const dz = $("#dz");
+    const filePhotos = $("#filePhotos");
+    const previews = $("#photoPreviews");
+    let editingFotos = []; // array DataURL temporaneo per il form
+
+    // QR refs
+    const qrBox = $("#qrPreview");
+    const qrContentInput = $("#qrContent");
+    const btnGenQR = $("#btnGenQR");
+    const btnDlQR = $("#btnDlQR");
+    const btnPrintQR = $("#btnPrintQR");
+    let qrWidget = null;
+
+    $("#btnDeleteVino").addEventListener("click", ()=>{
+      const id = formVino.elements["id"].value;
+      if (id && confirm("Eliminare questo vino?")) {
+        DB.vini = DB.vini.filter(v=>v.id!==id);
+        dlgVino.close(); saveStore();
+      }
+    });
+
+    function previewRender() {
+      previews.innerHTML = editingFotos.map((src, i)=>`
+        <div class="preview">
+          ${src}
+          <button type="button" data-del="${i}" title="Rimuovi">✕</button>
+        </div>
+      `).join("");
+    }
+    previews.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-del]"); if (!btn) return;
+      const idx = +btn.getAttribute("data-del");
+      editingFotos.splice(idx,1);
+      previewRender();
+    });
+
+    function bindDropzone() {
+      ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.add("drag"); }));
+      ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.remove("drag"); }));
+      dz.addEventListener("drop", async (e)=>{
+        const files = [...e.dataTransfer.files].filter(f=>f.type.startsWith("image/"));
+        await addPhotos(files);
+      });
+      filePhotos.addEventListener("change", async (e)=>{
+        const files = [...e.target.files].filter(f=>f.type.startsWith("image/"));
+        await addPhotos(files); filePhotos.value = "";
+      });
+      // Incolla immagini
+      dlgVino.addEventListener("paste", async (e)=>{
+        const items = [...(e.clipboardData?.items||[])];
+        const files = items.filter(it=>it.type.startsWith("image/")).map(it=>it.getAsFile()).filter(Boolean);
+        if (files.length) { e.preventDefault(); await addPhotos(files); }
+      });
+    }
+
+    async function addPhotos(files) {
+      const freeSlots = MAX_FOTOS - editingFotos.length;
+      const take = files.slice(0, freeSlots);
+      for (const f of take) {
+        try {
+          const data = await compressImageToDataURL(f, 1280, 0.85);
+          editingFotos.push(data);
+        } catch (err) {
+          console.warn("Errore foto", err);
+        }
+      }
+      if (files.length > freeSlots) {
+        alert(`Limite massimo ${MAX_FOTOS} foto per vino. (${files.length - freeSlots} non aggiunte)`);
+      }
+      previewRender();
+    }
+
+    function defaultQrForId(id) {
+      const base = window.location.href.split('#')[0];
+      return `${base}#vino=${id}`;
+    }
+
+    function ensureQrDefault(id, vino) {
+      const cur = (vino && vino.qr) || qrContentInput.value.trim();
+      if (!cur) {
+        const d = defaultQrForId(id);
+        qrContentInput.value = d;
+        renderQR(d);
+      } else {
+        renderQR(cur);
+      }
+    }
+
+    function renderQR(text) {
+      if (!qrWidget) qrWidget = new QRCode(qrBox, { text: "" });
+      qrWidget.clear();
+      qrWidget.makeCode(text || "");
+    }
+
+    btnGenQR.addEventListener("click", ()=>{
+      const txt = qrContentInput.value.trim();
+      renderQR(txt);
+    });
+
+    btnDlQR.addEventListener("click", ()=>{
+      const img = qrBox.querySelector("img") || qrBox.querySelector("canvas");
+      if (!img) return alert("Nessun QR da scaricare");
+      let dataUrl = "";
+      if (img.tagName === "IMG") dataUrl = img.src;
+      else dataUrl = img.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      const name = (formVino.elements["nome"].value || "qr").replace(/\s+/g,"_");
+      a.download = `QR_${name}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    btnPrintQR.addEventListener("click", ()=>{
+      const img = qrBox.querySelector("img") || qrBox.querySelector("canvas");
+      if (!img) return alert("Nessun QR da stampare");
+      const dataUrl = img.tagName === "IMG" ? img.src : img.toDataURL("image/png");
+      const nome = formVino.elements["nome"].value || "";
+      const posId = formVino.elements["posizione"].value || "";
+      const pos = DB.posizioni.find(p=>p.id===posId);
+      const posTxt = pos ? pos.codice : "";
+      const w = window.open("", "_blank", "width=400,height=600");
+      w.document.write(`
+        <html><head><title>Etichetta QR</title>
+        <style>
+          @page { size: 62mm 62mm; margin: 6mm; }
+          body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; text-align:center; }
+          .qr { width: 48mm; height: 48mm; margin: 0 auto 6mm; }
+          .qr img { width: 100%; height: 100%; }
+          .name { font-weight:700; font-size: 12pt; }
+          .pos { color:#333; font-size: 10pt; }
+        </style>
+        </head><body>
+          <div class="qr">${dataUrl}</div>
+          <div class="name">${nome}</div>
+          <div class="pos">${posTxt}</div>
+          <script>window.onload=()=>{ setTimeout(()=>{ window.print(); window.close(); }, 100); }<\/script>
+        </body></html>
+      `);
+      w.document.close();
+    });
+
+    function openVinoDialog(vino=null) {
+      populatePosizioniSelect();
+      formVino.reset();
+      $("#btnDeleteVino").classList.toggle("hidden", !vino);
+      editingFotos = [];
+      if (vino) {
+        for (const k in vino) {
+          if (["vitigni","abbinamenti","fotos","qr"].includes(k)) continue;
+          if (formVino.elements[k] !== undefined) formVino.elements[k].value = vino[k];
+        }
+        formVino.elements["vitigni"].value = (vino.vitigni||[]).join(", ");
+        formVino.elements["abbinamenti"].value = (vino.abbinamenti||[]).join(", ");
+        editingFotos = [...(vino.fotos||[])];
+        qrContentInput.value = vino.qr || "";
+        ensureQrDefault(vino.id, vino);
+      } else {
+        const newId = crypto.randomUUID();
+        formVino.elements["id"].value = newId;
+        qrContentInput.value = "";
+        ensureQrDefault(newId, null);
+      }
+      previewRender();
+      bindDropzone();
+      dlgVino.showModal();
+    }
+
+    formVino.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(formVino).entries());
+      const clean = (s) => (s||"").toString().trim();
+      const id = data.id || crypto.randomUUID();
+      const vino = {
+        id,
+        nome: clean(data.nome),
+        produttore: clean(data.produttore),
+        annata: data.annata?Number(data.annata):"",
+        denominazione: clean(data.denominazione),
+        paese: clean(data.paese),
+        regione: clean(data.regione),
+        zona: clean(data.zona),
+        vitigni: clean(data.vitigni)? clean(data.vitigni).split(",").map(s=>s.trim()).filter(Boolean) : [],
+        tipologia: clean(data.tipologia),
+        metodo: clean(data.metodo),
+        alcol: data.alcol?Number(data.alcol):"",
+        affinamento: clean(data.affinamento),
+        potenziale: data.potenziale?Number(data.potenziale):"",
+        temperatura: data.temperatura?Number(data.temperatura):"",
+        punteggio: data.punteggio?Number(data.punteggio):"",
+        stato: clean(data.stato),
+        bottiglie: data.bottiglie?Number(data.bottiglie):0,
+        prezzo: data.prezzo?Number(data.prezzo):"",
+        valore: data.valore?Number(data.valore):"",
+        dataAcquisto: data.dataAcquisto || "",
+        abbinamenti: clean(data.abbinamenti)? clean(data.abbinamenti).split(",").map(s=>s.trim()).filter(Boolean) : [],
+        note: clean(data.note),
+        posizione: clean(data.posizione),
+        fotos: editingFotos.slice(0, MAX_FOTOS),
+        qr: clean(data.qr) || defaultQrForId(id)
+      };
+      const idx = DB.vini.findIndex(v=>v.id===id);
+      if (idx>=0) DB.vini[idx] = vino; else DB.vini.push(vino);
+      dlgVino.close(); saveStore();
+    });
+
+    // ———————————————–
+    // Dialogs POSIZIONE
+    // ———————————————–
+    const dlgPos = $("#dlgPos");
+    const formPos = $("#formPos");
+    $("#btnDeletePos").addEventListener("click", ()=>{
+      const id = formPos.elements["id"].value;
+      if (id && confirm("Eliminare questa posizione?")) {
+        const used = DB.vini.some(v => v.posizione === id);
+        if (used) DB.vini.forEach(v=>{ if (v.posizione===id) v.posizione=""; });
+        DB.posizioni = DB.posizioni.filter(p=>p.id!==id);
+        dlgPos.close(); saveStore();
+      }
+    });
+
+    function openPosDialog(pos=null) {
+      formPos.reset();
+      $("#btnDeletePos").classList.toggle("hidden", !pos);
+      if (pos) {
+        for (const k in pos) if (formPos.elements[k] !== undefined) formPos.elements[k].value = pos[k];
+      } else {
+        formPos.elements["id"].value = "";
+      }
+      dlgPos.showModal();
+    }
+
+    formPos.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(formPos).entries());
+      const id = data.id || crypto.randomUUID();
+      const pos = {
+        id,
+        codice: (data.codice||"").trim(),
+        cantina: (data.cantina||"").trim(),
+        settore: (data.settore||"").trim(),
+        scaffale: data.scaffale?Number(data.scaffale):"",
+        ripiano: data.ripiano?Number(data.ripiano):"",
+        lato: (data.lato||"").trim(),
+        conservazione: (data.conservazione||"").trim(),
+        temperatura: data.temperatura?Number(data.temperatura):"",
+        umidita: data.umidita?Number(data.umidita):""
+      };
+      const idx = DB.posizioni.findIndex(p=>p.id===id);
+      if (idx>=0) DB.posizioni[idx] = pos; else DB.posizioni.push(pos);
+      dlgPos.close(); saveStore();
+    });
+
+    // Backup
+    $("#btnExport").addEventListener("click", ()=>{
+      const blob = new Blob([JSON.stringify(DB, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `cantina_backup_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    $("#importFile").addEventListener("change", async (e)=>{
+      const file = e.target.files[0]; if (!file) return;
+      const txt = await file.text();
+      try {
+        const obj = JSON.parse(txt);
+        if (!obj.vini || !obj.posizioni) throw new Error("Struttura JSON non valida");
+        obj.vini.forEach(v => { if (!Array.isArray(v.fotos)) v.fotos = []; if (!("qr" in v)) v.qr = ""; });
+        DB = obj; saveStore();
+        alert("Import completato ✅");
+      } catch (err) {
+        alert("Errore import: " + err.message);
+      } finally {
+        e.target.value = "";
+      }
+    });
+
+    // ———————————————–
+    // Lightbox / galleria
+    // ———————————————–
+    const lb = $("#lightbox");
+    const lbImg = $("#lbImg");
+    const lbPrev = $("#lbPrev");
+    const lbNext = $("#lbNext");
+    const lbClose = $("#lbClose");
+    let lbFotos = [];
+    let lbIndex = 0;
+    let lbVinoId = null;
+
+    function showLbImage() { if (!lbFotos.length) return; lbImg.src = lbFotos[lbIndex]; }
+    function openLightbox(fotos, start=0, vinoId=null) {
+      lbFotos = fotos.slice();
+      lbIndex = Math.min(Math.max(0, start), lbFotos.length - 1);
+      lbVinoId = vinoId;
+      showLbImage();
+      lb.classList.add("show");
+    }
+    function closeLightbox() { lb.classList.remove("show"); lbFotos = []; lbIndex = 0; lbVinoId = null; }
+    lbPrev.addEventListener("click", ()=>{ if (!lbFotos.length) return; lbIndex = (lbIndex - 1 + lbFotos.length) % lbFotos.length; showLbImage(); });
+    lbNext.addEventListener("click", ()=>{ if (!lbFotos.length) return; lbIndex = (lbIndex + 1) % lbFotos.length; showLbImage(); });
+    lbClose.addEventListener("click", closeLightbox);
+    lb.addEventListener("click", (e)=>{ if (e.target === lb) closeLightbox(); });
+    window.addEventListener("keydown", (e)=>{
+      if (!lb.classList.contains("show")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") lbPrev.click();
+      if (e.key === "ArrowRight") lbNext.click();
+      if (e.key === "Delete" && lbVinoId) {
+        if (confirm("Eliminare questa foto dal vino?")) {
+          const vino = DB.vini.find(v => v.id === lbVinoId);
+          if (vino) {
+            vino.fotos.splice(lbIndex, 1);
+            if (!vino.fotos.length) closeLightbox(); else { lbFotos = vino.fotos.slice(); lbIndex = Math.min(lbIndex, lbFotos.length-1); showLbImage(); }
+            saveStore();
+          }
+        }
+      }
+    });
+
+    // ———————————————–
+    // Deep-link: #vino=<id> apre la scheda
+    // ———————————————–
+    function openByHash() {
+      const m = (location.hash || "").match(/vino=([a-f0-9-]+)/i);
+      if (m) {
+        const vino = DB.vini.find(v=>v.id===m[1]);
+        if (vino) openVinoDialog(vino);
+      }
+    }
+    window.addEventListener("hashchange", openByHash);
+
+    // Init
+    renderAll();
+    openByHash();
+  </script>
+
+  <!-- PWA: registra il Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+      });
+    }
+  </script>
+</body>
+</html>
