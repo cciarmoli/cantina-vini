@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Cantina Vini">
-  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel='apple-touch-startup-image' href='splash/iphone-1170x2532.png' media='(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)'>
   <link rel='apple-touch-startup-image' href='splash/iphone-1284x2778.png' media='(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)'>
   <link rel='apple-touch-startup-image' href='splash/iphone-1125x2436.png' media='(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)'>
@@ -111,7 +111,54 @@
       .grid>[class^="col-"]{grid-column:span 12!important}
     }
     html.no-scroll, body.no-scroll { overflow: hidden; }
-  </style>
+  
+/* ── Modalità compatta iPhone ────────────────────────────────────────────── */
+@media (max-width: 430px) {
+  /* Dialog a schermo pieno + scrolling interno comodo */
+  dialog#dlgVino[open] {
+    max-width: 100vw !important;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto; /* titolo, contenuto, footer */
+    background: var(--bg);
+  }
+  #formVino { display: contents; }
+  #formVino > h3 {
+    padding: 10px 12px; margin: 0; font-size: 16px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg,#12161c,#0f1216 60%);
+    position: sticky; top: 0; z-index: 2;
+  }
+  /* Corpo scrollabile e più denso */
+  #formVino .grid {
+    gap: 6px; padding: 10px 12px; overflow: auto; -webkit-overflow-scrolling: touch;
+  }
+  .field label { font-size: 11px; margin-bottom: 3px; }
+  .field input, .field select, .field textarea {
+    font-size: 16px; line-height: 1.2; padding: 8px 10px;
+  }
+  .section-title { font-size: 12px; margin: 8px 0 4px; }
+  /* Dropzone e anteprime più piccole */
+  #dz { padding: 8px; font-size: 12px; }
+  #photoPreviews .preview img { width: 72px; height: 72px; }
+  /* Footer fisso in basso tipo toolbar */
+  #dlgVino .footer {
+    position: sticky; bottom: 0; z-index: 2; padding: 8px 12px;
+    background: #0f1216cc; backdrop-filter: saturate(120%) blur(6px);
+    border-top: 1px solid var(--line);
+  }
+  #dlgVino .footer .small { display: none; }
+  #btnDeleteVino { padding: 6px 10px !important; }
+  /* QR box più compatta */
+  .qrbox { width: 160px; min-height: 160px; }
+  .qrbox canvas, .qrbox img { width: 150px; height: 150px; }
+}
+
+</style>
 </head>
 <body>
   <header>
